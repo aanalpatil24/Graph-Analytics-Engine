@@ -50,3 +50,7 @@ add_subdirectory(benchmarks)
 target_include_directories(graph_engine PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
+
+
+add_executable(benchmark_safe_flow benchmarks/benchmark_safe_flow.cpp)
+target_link_libraries(benchmark_safe_flow PRIVATE graph_engine)

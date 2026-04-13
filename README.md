@@ -6,7 +6,7 @@ A high-performance C++20 graph processing suite engineered to demonstrate the tr
 
 The primary goal of this project is to bypass the "memory wall" and scalar bottlenecks of traditional graph algorithms.
 
-| Metric | Baseline Implementation | Optimized HFT-Grade Engine |
+| Metric | Baseline Implementation | Optimized Engine |
 | :--- | :--- | :--- |
 | **Throughput** | Scalar (1 edge / cycle) | **SIMD (16 edges / cycle)** |
 | **Memory Layout** | `std::vector` (Fragmented) | **CSR Format (64B Cache-Aligned)** |
@@ -24,7 +24,7 @@ The project is split into two distinct engines to allow for transparent, head-to
 * **Logic:** Employs traditional adjacency lists and scalar loops for graph relaxation.
 * **Purpose:** Serves as the control group for performance auditing and speedup verification.
 
-### 2. [Optimized Engine](./Graph%20Analytics%20Engine%20Optimized/)
+### 2. [Optimized Engine](./Graph%20Analytics%20Engine%20Main/)
 * **SIMD Vectorization:** Utilizes `_mm512_i32gather_epi32` and `_mm512_mask_i32scatter_epi32` to process 16 graph edges in a single clock cycle.
 * **Memory Physics:** Implements a **Compressed Sparse Row (CSR)** format with custom `AlignedAllocator<64>` to eliminate cache-line splitting.
 * **Atomics:** Employs a **Michael-Scott lock-free queue** and specialized atomic memory ordering (`memory_order_acquire/release`) to eliminate thread stall-cycles.
@@ -53,9 +53,9 @@ make -j$(nproc)
 
 # 2. Run Head-to-Head Benchmarks
 # This will output the empirical speedup of Optimized vs. Baseline
-./Graph\ Analytics\ Engine\ Optimized/benchmarks/benchmark_spfa
+./Graph\ Analytics\ Engine\ Main/benchmarks/benchmark_spfa
 
 # 3. Verify Memory Integrity
 # Ensures zero leaks in the optimized lock-free structures
-valgrind --leak-check=full ./Graph\ Analytics\ Engine\ Optimized/tests/graph_tests
+valgrind --leak-check=full ./Graph\ Analytics\ Engine\ Main/tests/graph_tests
 ```

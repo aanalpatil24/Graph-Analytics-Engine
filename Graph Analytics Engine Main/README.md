@@ -89,6 +89,5 @@ valgrind --leak-check=full --show-leak-kinds=all ./tests/graph_tests
 # 6. Coverage :-  This generates an lcov/html report for the gTest suite
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
 make coverage
-
 ```
 

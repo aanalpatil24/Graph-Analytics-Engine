@@ -19,12 +19,12 @@ The primary goal of this project is to bypass the "memory wall" and scalar bottl
 
 The project is split into two distinct engines to allow for transparent, head-to-head benchmarking:
 
-### 1. [Baseline Engine](./Graph%20Analytics%20Engine%20Base/) (The "Before")
+### 1. [Baseline Engine](./Graph%20Analytics%20Engine%20Base/)
 * **Architecture:** Standard Object-Oriented C++ using `std::vector<std::vector<Edge>>`.
 * **Logic:** Employs traditional adjacency lists and scalar loops for graph relaxation.
 * **Purpose:** Serves as the control group for performance auditing and speedup verification.
 
-### 2. [Optimized Engine](./Graph%20Analytics%20Engine%20Optimized/) (The "After")
+### 2. [Optimized Engine](./Graph%20Analytics%20Engine%20Optimized/)
 * **SIMD Vectorization:** Utilizes `_mm512_i32gather_epi32` and `_mm512_mask_i32scatter_epi32` to process 16 graph edges in a single clock cycle.
 * **Memory Physics:** Implements a **Compressed Sparse Row (CSR)** format with custom `AlignedAllocator<64>` to eliminate cache-line splitting.
 * **Atomics:** Employs a **Michael-Scott lock-free queue** and specialized atomic memory ordering (`memory_order_acquire/release`) to eliminate thread stall-cycles.

@@ -1,0 +1,59 @@
+name: C++20 Build and Validation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build and Test (Ubuntu, GCC)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake valgrind g++-12
+        
+    - name: Configure CMake (Debug Mode for Memory Checks)
+      run: |
+        cmake -B build_debug \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_COMPILER=g++-12
+          
+    - name: Build Tests
+      run: cmake --build build_debug --target graph_tests --parallel $(nproc)
+
+    - name: Run Google Tests
+      working-directory: build_debug
+      run: ctest --output-on-failure
+
+    - name: Run Valgrind (Memory Leak Check)
+      working-directory: build_debug
+      run: |
+        valgrind --leak-check=full \
+                 --show-leak-kinds=all \
+                 --error-exitcode=1 \
+                 ./tests/graph_tests
+
+    - name: Configure CMake (Release Mode for Benchmarks)
+      run: |
+        cmake -B build_release \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CXX_COMPILER=g++-12
+          
+    - name: Build Benchmarks
+      run: cmake --build build_release --parallel $(nproc)
+
+    - name: Execute AVX-512 & Flow Benchmarks
+      working-directory: build_release
+      run: |
+        echo "=== Running SPFA Engine Benchmark ==="
+        ./benchmarks/benchmark_spfa
+        echo "=== Running Safe Flow Benchmark ==="
+        ./benchmarks/benchmark_safe_flow

@@ -1,0 +1,37 @@
+GraphAnalyticsEngine/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── cmake/
+│   ├── AVX512Check.cmake
+│   └── CompilerWarnings.cmake
+├── include/
+│   └── sfge/
+│       ├── core/
+│       │   ├── concepts.hpp
+│       │   ├── directed_graph.hpp
+│       │   └── flow_network.hpp
+│       ├── algorithms/
+│       │   ├── safe_decomposition.hpp
+│       │   └── spfa_vectorized.hpp
+│       ├── simd/
+│       │   └── avx512_vector.hpp
+│       └── concurrency/
+│           ├── thread_pool.hpp
+│           └── lock_free_queue.hpp
+├── src/
+│   ├── safe_decomposition.cpp
+│   ├── spfa_vectorized.cpp
+│   └── thread_pool.cpp
+├── tests/
+│   ├── CMakeLists.txt
+│   ├── unit/
+│   │   ├── test_safe_flow.cpp
+│   │   ├── test_simd_spfa.cpp
+│   │   └── test_concurrency.cpp
+│   └── integration/
+│       └── test_end_to_end.cpp
+├── .gitignore
+├── CMakeLists.txt
+├── Dockerfile
+└── README.md

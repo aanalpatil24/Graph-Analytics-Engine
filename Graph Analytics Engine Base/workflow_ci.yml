@@ -1,0 +1,51 @@
+# .github/workflows/ci.yml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [g++-12, clang++-15]
+        build_type: [Release, Debug]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake valgrind
+        
+    - name: Configure
+      run: |
+        cmake -B build \
+          -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          
+    - name: Build
+      run: cmake --build build --parallel $(nproc)
+      
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure
+      
+    - name: Memory Check (Debug only)
+      if: matrix.build_type == 'Debug'
+      working-directory: build
+      run: |
+        valgrind --leak-check=full --error-exitcode=1 \
+          ./graph_engine_tests --gtest_filter=-*Performance*
+          
+    - name: Coverage (Debug only)
+      if: matrix.build_type == 'Debug' && matrix.compiler == 'g++-12'
+      run: |
+        sudo apt-get install -y lcov
+        cmake -B build_cov -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
+        cmake --build build_cov
+        cd build_cov && ctest
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info

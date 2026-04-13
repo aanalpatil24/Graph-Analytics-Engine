@@ -27,7 +27,7 @@ jobs:
           -DCMAKE_CXX_COMPILER=g++-12
           
     - name: Build Tests
-      run: cmake --build build_debug --target graph_tests --parallel $(nproc)
+      run: cmake --build build_debug --parallel $(nproc)
 
     - name: Run Google Tests
       working-directory: build_debug
@@ -35,11 +35,12 @@ jobs:
 
     - name: Run Valgrind (Memory Leak Check)
       working-directory: build_debug
+      # Notice the quotes to handle the spaces in your folder name!
       run: |
         valgrind --leak-check=full \
                  --show-leak-kinds=all \
                  --error-exitcode=1 \
-                 ./tests/graph_tests
+                 "./Graph Analytics Engine Main/tests/graph_tests"
 
     - name: Configure CMake (Release Mode for Benchmarks)
       run: |
@@ -50,10 +51,9 @@ jobs:
     - name: Build Benchmarks
       run: cmake --build build_release --parallel $(nproc)
 
-    - name: Execute AVX-512 & Flow Benchmarks
+    - name: Execute AVX-512 Benchmarks
       working-directory: build_release
+      # Notice we removed safe_flow and updated the path for the dual-engine layout
       run: |
         echo "=== Running SPFA Engine Benchmark ==="
-        ./benchmarks/benchmark_spfa
-        echo "=== Running Safe Flow Benchmark ==="
-        ./benchmarks/benchmark_safe_flow
+        "./Graph Analytics Engine Main/benchmarks/benchmark_spfa"

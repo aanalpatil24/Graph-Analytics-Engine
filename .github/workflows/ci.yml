@@ -57,3 +57,9 @@ jobs:
       run: |
         echo "=== Running SPFA Engine Benchmark ==="
         "./Graph Analytics Engine Main/benchmarks/benchmark_spfa"
+# Safe-flow-decomposition
+    - name: Execute Safe Flow Application Benchmark
+      working-directory: build_release
+      run: |
+        echo "=== Running Safe Flow Decomposition Benchmark ==="
+        "./Graph Analytics Engine Optimized/benchmarks/benchmark_safe_flow"
